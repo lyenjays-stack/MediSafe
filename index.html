@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MediSafe — Never miss a dose again</title>
+<meta name="description" content="MediSafe is a smart medication system: an AI-verified pill box and a caring app that keeps families on track.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<style>
+  :root{
+    --deep:#0C2B2C; --teal:#119B95; --teal-d:#0E7E79; --amber:#E8A23D;
+    --ink:#0F2A2C; --muted:#5E7373; --line:#E1ECEA;
+    --bg:#F1F7F5; --mint:#E4F1EF; --card:#FFFFFF;
+    --green:#2E9E6B; --red:#D9534F; --coral:#E8746B;
+    --soft:#EAF4F2;
+    --display:'Bricolage Grotesque', system-ui, sans-serif;
+    --body:'Inter', system-ui, sans-serif;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3,h4{font-family:var(--display);line-height:1.05;letter-spacing:-0.02em;font-weight:800}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+
+  /* ---------- nav ---------- */
+  nav{position:sticky;top:0;z-index:50;background:rgba(241,247,245,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:800;font-size:21px;color:var(--deep)}
+  .brand .mark{width:34px;height:34px;border-radius:11px;background:var(--deep);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .nav-links{display:flex;align-items:center;gap:30px;font-weight:500;font-size:15px;color:var(--muted)}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:600;font-size:15px;border:none;cursor:pointer;border-radius:999px;padding:11px 20px;transition:transform .15s ease, box-shadow .15s ease}
+  .btn-primary{background:var(--teal);color:#fff;box-shadow:0 8px 20px rgba(17,155,149,.28)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(17,155,149,.36)}
+  .btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btn-ghost:hover{background:#fff}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:64px 0 40px;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+  .tag{display:inline-flex;align-items:center;gap:8px;background:var(--mint);color:var(--teal-d);font-weight:600;font-size:14px;padding:7px 14px;border-radius:999px;margin-bottom:22px}
+  .tag .dot{width:7px;height:7px;border-radius:50%;background:var(--teal)}
+  .hero h1{font-size:clamp(40px,6vw,68px);color:var(--deep)}
+  .hero h1 .hl{color:var(--teal)}
+  .hero p.lead{font-size:19px;color:var(--muted);max-width:32ch;margin:22px 0 30px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero-note{margin-top:24px;display:flex;gap:26px;color:var(--muted);font-size:14px;flex-wrap:wrap}
+  .hero-note b{color:var(--ink);font-family:var(--display);font-weight:800;font-size:22px;display:block;line-height:1;margin-bottom:2px}
+  .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5;z-index:-1}
+  .blob.a{width:420px;height:420px;background:#BFE6E2;top:-120px;right:-80px}
+  .blob.b{width:300px;height:300px;background:#FBE3BE;bottom:-80px;left:-100px;opacity:.45}
+
+  /* ---------- phone ---------- */
+  .phone-stage{display:flex;justify-content:center;position:relative}
+  .phone{width:300px;height:620px;background:var(--deep);border-radius:44px;padding:11px;box-shadow:0 40px 80px -20px rgba(12,43,44,.45);position:relative}
+  .screen{width:100%;height:100%;background:var(--bg);border-radius:34px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+  .notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:26px;background:var(--deep);border-radius:0 0 16px 16px;z-index:30}
+  .float-card{position:absolute;background:#fff;border-radius:16px;box-shadow:0 18px 40px -12px rgba(12,43,44,.28);padding:13px 15px;display:flex;align-items:center;gap:11px;font-size:13px;font-weight:600;z-index:5;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+  .float-card.dragging{cursor:grabbing;animation:none!important;box-shadow:0 24px 50px -10px rgba(12,43,44,.4)}
+  .float-card .ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .fc1{top:60px;left:-46px;animation:floaty 4s ease-in-out infinite}
+  .fc2{bottom:90px;right:-40px;animation:floaty 4s ease-in-out infinite .8s}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+  .app{flex:1;display:flex;flex-direction:column;height:100%;font-size:13px}
+  .app-top{height:44px;flex-shrink:0}
+  .app-body{flex:1;overflow-y:auto;padding:6px 16px 92px}
+  .app-body::-webkit-scrollbar{display:none}
+  .app h2.scr-title{font-size:25px;color:var(--ink);margin:4px 0 2px}
+  .app .sub{font-size:13px;color:var(--muted);font-weight:500}
+  .a-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 16px rgba(15,42,44,.04);margin-top:13px}
+  .ring{width:62px;height:62px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+  .ring i{width:47px;height:47px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;font-style:normal;color:var(--ink)}
+  .badge{font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;white-space:nowrap}
+  .dose-row{display:flex;align-items:center;gap:11px;padding:11px 12px;border-bottom:1px solid var(--line)}
+  .dose-row:last-child{border-bottom:none}
+  .pill-ic{width:34px;height:34px;border-radius:10px;background:var(--soft);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .next-card{background:var(--deep);color:#EAF1F0;border-radius:16px;padding:16px;margin-top:13px}
+  .next-card .e{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);font-weight:700}
+  .next-card .nm{font-size:20px;font-weight:800;font-family:var(--display);margin-top:5px}
+  .take-btn{margin-top:13px;width:100%;border:none;border-radius:12px;padding:12px;background:var(--teal);color:#fff;font-weight:700;font-size:14px;font-family:var(--body);cursor:pointer}
+  .tabbar{position:absolute;left:0;right:0;bottom:0;height:78px;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;align-items:center;padding:0 18px 16px;z-index:20}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:none;cursor:pointer;font-family:var(--body);font-size:10px;font-weight:600;color:#9AAFAE;padding-top:12px}
+  .tab.active{color:var(--teal)}
+  .tab-add{flex:1;display:flex;justify-content:center}
+  .tab-add .fab{width:46px;height:46px;border-radius:50%;background:var(--teal);margin-top:-26px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 16px rgba(17,155,149,.4);border:none;cursor:pointer}
+  .week{display:flex;justify-content:space-between;align-items:flex-end;height:78px;margin-top:14px}
+  .wbar{width:11px;height:60px;background:var(--soft);border-radius:999px;display:flex;align-items:flex-end;overflow:hidden}
+  .wbar i{display:block;width:100%;border-radius:999px}
+  .scan{position:absolute;inset:0;background:var(--deep);z-index:40;display:flex;flex-direction:column;align-items:center;color:#EAF1F0;padding:50px 22px 26px;border-radius:34px}
+  .viewfinder{width:170px;height:170px;border-radius:22px;background:#06201F;border:1px solid #1E4244;position:relative;display:flex;align-items:center;justify-content:center;margin:auto 0}
+  .vpill{width:78px;height:32px;border-radius:999px;background:linear-gradient(90deg,#E8A23D 0 50%,#EAF1F0 50% 100%);box-shadow:0 6px 18px rgba(0,0,0,.4)}
+  .scanline{position:absolute;left:8%;right:8%;height:2px;background:var(--teal);box-shadow:0 0 12px var(--teal);animation:scan 2.1s ease-in-out infinite}
+  @keyframes scan{0%{top:10%}50%{top:86%}100%{top:10%}}
+  .verific{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(46,158,107,.18);border-radius:22px}
+  .vcheck{width:60px;height:60px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;animation:pop .3s ease-out}
+  @keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+
+  /* ---------- sections ---------- */
+  section.block{padding:88px 0}
+  .center{text-align:center;max-width:640px;margin:0 auto 54px}
+  .center h2{font-size:clamp(30px,4vw,46px);color:var(--deep)}
+  .center p{font-size:18px;color:var(--muted);margin-top:16px}
+
+  .strip{background:var(--deep);color:#CFE0DE;padding:30px 0}
+  .strip-in{display:flex;justify-content:space-around;flex-wrap:wrap;gap:24px;text-align:center}
+  .strip b{display:block;font-family:var(--display);font-weight:800;font-size:34px;color:#fff;line-height:1}
+  .strip span{font-size:14px;color:#9DBAB7}
+  .strip .am{color:var(--amber)}
+
+  .prob-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .prob{background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px 26px}
+  .prob .n{font-family:var(--display);font-weight:800;font-size:40px;color:var(--coral);line-height:1}
+  .prob h3{font-size:20px;margin:14px 0 8px;color:var(--ink)}
+  .prob p{color:var(--muted);font-size:15px}
+
+  .feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+  .feat{display:flex;gap:18px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px;transition:.2s}
+  .feat:hover{border-color:#CDE4E1;transform:translateY(-3px)}
+  .feat .fic{width:54px;height:54px;border-radius:15px;background:var(--mint);color:var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .feat h3{font-size:19px;color:var(--ink);margin-bottom:6px}
+  .feat p{color:var(--muted);font-size:15px}
+  .feat .step{font-size:12px;font-weight:700;color:var(--amber);letter-spacing:.1em;text-transform:uppercase}
+
+  .box-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:54px;align-items:center}
+  .box-visual{background:linear-gradient(160deg,#103A3A,#0C2B2C);border-radius:30px;padding:44px;display:flex;align-items:center;justify-content:center;min-height:380px;position:relative;overflow:hidden}
+  .device{width:230px;height:260px;background:linear-gradient(180deg,#F6FAF9,#E6EFED);border-radius:22px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);position:relative;display:flex;flex-direction:column;overflow:hidden}
+  .device .lid{height:54px;background:var(--teal);display:flex;align-items:center;justify-content:space-between;padding:0 18px;color:#fff;font-weight:700;font-family:var(--display)}
+  .device .grid7{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:8px;padding:14px}
+  .slot{background:#fff;border-radius:9px;border:1.5px solid #DCE8E6;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--muted);font-family:var(--display);font-size:15px}
+  .slot.lit{background:var(--mint);border-color:var(--teal);color:var(--teal-d);box-shadow:0 0 0 3px rgba(17,155,149,.15);animation:glow 2s ease-in-out infinite}
+  @keyframes glow{0%,100%{box-shadow:0 0 0 3px rgba(17,155,149,.12)}50%{box-shadow:0 0 0 6px rgba(17,155,149,.22)}}
+  .box-feature{display:flex;gap:13px;margin-top:18px}
+  .box-feature .ck{width:24px;height:24px;border-radius:50%;background:var(--mint);color:var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+  .box-feature h4{font-size:16px;color:var(--ink);font-family:var(--body);font-weight:700}
+  .box-feature p{font-size:14px;color:var(--muted)}
+
+  .how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .how .num{width:42px;height:42px;border-radius:50%;background:var(--deep);color:#fff;font-family:var(--display);font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+  .how h3{font-size:18px;color:var(--ink);margin-bottom:7px}
+  .how p{color:var(--muted);font-size:14px}
+
+  .cta-band{background:linear-gradient(135deg,var(--teal),var(--teal-d));border-radius:32px;padding:56px;text-align:center;color:#fff;position:relative;overflow:hidden}
+  .cta-band h2{font-size:clamp(28px,4vw,42px);color:#fff}
+  .cta-band p{font-size:18px;color:#D6F0EE;margin:16px auto 28px;max-width:46ch}
+  .cta-band .btn-primary{background:#fff;color:var(--teal-d);box-shadow:0 10px 30px rgba(0,0,0,.2)}
+
+  footer{background:var(--deep);color:#9DBAB7;padding:54px 0 36px}
+  .foot-grid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:30px;padding-bottom:30px;border-bottom:1px solid rgba(255,255,255,.08)}
+  footer .brand{color:#fff}
+  footer .brand .mark{background:var(--teal)}
+  .foot-credit{font-size:14px;line-height:1.8}
+  .foot-credit b{color:#E7F2F0;font-weight:600}
+  .foot-bottom{padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px}
+
+  .i{display:block}
+  .i path,.i circle,.i rect,.i line{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+  @media(max-width:920px){
+    .hero-grid{grid-template-columns:1fr;gap:30px}
+    .phone-stage{order:-1}
+    .hero p.lead{max-width:none}
+    .prob-grid{grid-template-columns:1fr}
+    .feat-grid{grid-template-columns:1fr}
+    .box-grid{grid-template-columns:1fr;gap:32px}
+    .how-grid{grid-template-columns:1fr 1fr}
+    .nav-links a:not(.btn){display:none}
+  }
+  @media(max-width:560px){
+    .how-grid{grid-template-columns:1fr}
+    .cta-band{padding:38px 24px}
+    .box-visual{padding:30px;min-height:320px}
+    section.block{padding:60px 0}
+    .fc1{left:-10px} .fc2{right:-6px}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <div class="brand">
+      <span class="mark"><svg class="i" width="24" height="24" viewBox="0 0 24 24" style="color:#119B95"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(45 12 12)"/></svg></span>
+      MediSafe
+    </div>
+    <div class="nav-links">
+      <a href="#problem">Why MediSafe</a>
+      <a href="#features">App</a>
+      <a href="#medibox">The Box</a>
+      <a href="#how">How it works</a>
+      <a class="btn btn-primary" href="#demo">Try the demo</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="demo">
+  <div class="blob a"></div>
+  <div class="blob b"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="tag"><span class="dot"></span> HGD134 · Innovative & Creative Students</span>
+      <h1>Never miss a dose <span class="hl">again.</span></h1>
+      <p class="lead">MediSafe pairs a smart pill box with a caring app — so the right medicine, in the right amount, is taken at the right time. Every time.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#features">Explore the app
+          <svg class="i" width="18" height="18" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="#medibox">Meet the box</a>
+      </div>
+      <div class="hero-note">
+        <div><b>92%</b>weekly adherence</div>
+        <div><b>7</b>smart compartments</div>
+        <div><b>AI</b>pill verification</div>
+      </div>
+    </div>
+
+    <div class="phone-stage">
+      <div class="float-card fc1">
+        <span class="ic" style="background:#E6F4EC;color:#2E9E6B"><svg class="i" width="18" height="18" viewBox="0 0 24 24" style="color:#2E9E6B"><path d="M5 13l4 4L19 7"/></svg></span>
+        Dose taken · 08:02
+      </div>
+      <div class="float-card fc2">
+        <span class="ic" style="background:#FBF1E1;color:#E8A23D"><svg class="i" width="18" height="18" viewBox="0 0 24 24" style="color:#E8A23D"><path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span>
+        Reminder sent to Mak
+      </div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen"><div class="app" id="app"></div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="strip">
+  <div class="wrap strip-in">
+    <div><b>50%</b><span>of patients forget doses weekly</span></div>
+    <div><b class="am">3×</b><span>safer with verified dispensing</span></div>
+    <div><b>1 tap</b><span>keeps family in the loop</span></div>
+    <div><b>24/7</b><span>caregiver monitoring</span></div>
+  </div>
+</div>
+
+<section class="block" id="problem">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">The problem</span>
+      <h2>Taking medicine correctly is harder than it looks</h2>
+      <p>Especially for elderly people managing several prescriptions, or families caring from a distance.</p>
+    </div>
+    <div class="prob-grid">
+      <div class="prob"><div class="n">01</div><h3>Easy to forget</h3><p>Busy days and similar-looking pills make missed or doubled doses common — and sometimes dangerous.</p></div>
+      <div class="prob"><div class="n">02</div><h3>Wrong pill, wrong time</h3><p>Without a check, it's easy to take the afternoon tablet in the morning, or grab the wrong bottle entirely.</p></div>
+      <div class="prob"><div class="n">03</div><h3>Family can't see</h3><p>Children living away have no simple way to know whether mum or dad actually took today's medicine.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="features" style="background:var(--soft)">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">The app</span>
+      <h2>Five simple screens, one calm routine</h2>
+      <p>Designed to be gentle for patients and reassuring for the family who care about them.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat"><div class="fic"><svg class="i" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5"/><path d="M9 2h6"/></svg></div><div><div class="step">Screen 01</div><h3>Today</h3><p>The day's doses at a glance, with a progress ring and a clear "take now" for the next one due.</p></div></div>
+      <div class="feat"><div class="fic"><svg class="i" width="24" height="24" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="3"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l1.5-2.5h5L16 7"/></svg></div><div><div class="step">Screen 02</div><h3>AI pill verification</h3><p>Point the camera at the pill — MediSafe confirms it's the right one from the right compartment before you take it.</p></div></div>
+      <div class="feat"><div class="fic"><svg class="i" width="24" height="24" viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></div><div><div class="step">Screen 03</div><h3>History</h3><p>A weekly adherence chart and a clear log of every dose taken or missed, so progress is easy to see.</p></div></div>
+      <div class="feat"><div class="fic"><svg class="i" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg></div><div><div class="step">Screen 04</div><h3>Caregiver</h3><p>Family see a live status, get missed-dose alerts, and can call or message in one tap.</p></div></div>
+      <div class="feat" style="grid-column:1/-1"><div class="fic"><svg class="i" width="24" height="24" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div><div><div class="step">Screen 05</div><h3>Add medication</h3><p>Set up a new medicine in seconds — name, dose, times of day, and which of the seven box compartments it lives in.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="medibox">
+  <div class="wrap box-grid">
+    <div class="box-visual" style="padding:0;overflow:hidden">
+      <model-viewer
+        src="medibox.glb"
+        poster="medibox-render.png"
+        alt="MediBox 3D model — a seven-compartment smart pill dispenser"
+        camera-controls
+        auto-rotate
+        auto-rotate-delay="0"
+        rotation-per-second="18deg"
+        shadow-intensity="1"
+        exposure="1.1"
+        camera-orbit="35deg 72deg 2.4m"
+        environment-image="neutral"
+        style="width:100%;height:420px;background:transparent"
+        loading="eager">
+        <div slot="poster" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#103A3A,#0C2B2C)">
+          <img src="medibox-render.png" alt="MediBox" style="max-width:92%;max-height:92%;object-fit:contain;border-radius:18px">
+        </div>
+        <div slot="progress-bar"></div>
+      </model-viewer>
+      <div style="position:absolute;bottom:12px;left:0;right:0;text-align:center;color:#9DD3BC;font-size:12px;pointer-events:none">↺ drag to rotate · scroll to zoom</div>
+    </div>
+    <div>
+      <span class="eyebrow">The hardware</span>
+      <h2 style="font-size:clamp(28px,4vw,40px);color:var(--deep);margin-top:12px">A box that lights the way</h2>
+      <p style="color:var(--muted);font-size:17px;margin-top:14px">MediBox is a seven-compartment smart dispenser. When a dose is due, the right compartment glows and the app sends a gentle reminder — pairing the physical box with the digital app.</p>
+      <div class="box-feature"><span class="ck"><svg class="i" width="15" height="15" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><div><h4>Lit compartments</h4><p>The correct slot lights up at dose time, so there's no guessing.</p></div></div>
+      <div class="box-feature"><span class="ck"><svg class="i" width="15" height="15" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><div><h4>Connected to the app</h4><p>An ESP32 chip syncs the box with MediSafe over Wi-Fi for live status and history.</p></div></div>
+      <div class="box-feature"><span class="ck"><svg class="i" width="15" height="15" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><div><h4>AI-checked before you swallow</h4><p>The camera verifies the pill matches the compartment, adding a safety net for every dose.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="how" style="background:var(--soft)">
+  <div class="wrap">
+    <div class="center"><span class="eyebrow">How it works</span><h2>From reminder to peace of mind</h2></div>
+    <div class="how-grid">
+      <div class="how"><div class="num">1</div><h3>Dose is due</h3><p>The box compartment lights up and the app sends a reminder at the scheduled time.</p></div>
+      <div class="how"><div class="num">2</div><h3>AI verifies the pill</h3><p>The camera confirms it's the right medicine before it's taken.</p></div>
+      <div class="how"><div class="num">3</div><h3>Dose confirmed</h3><p>One tap marks it done, and the history updates automatically.</p></div>
+      <div class="how"><div class="num">4</div><h3>Family is notified</h3><p>Caregivers see the update live, or get an alert if a dose is missed.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="cta-band">
+      <h2>Care that fits in a pocket — and on the kitchen counter</h2>
+      <p>MediSafe is a student innovation project reimagining how families keep their loved ones safe, one dose at a time.</p>
+      <a class="btn btn-primary" href="#demo">Back to the live demo
+        <svg class="i" width="18" height="18" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand"><span class="mark"><svg class="i" width="24" height="24" viewBox="0 0 24 24" style="color:#fff"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(45 12 12)"/></svg></span>MediSafe</div>
+        <p style="margin-top:14px;max-width:34ch;font-size:14px">Smart medication management — keeping doses on time and families in the loop.</p>
+      </div>
+      <div class="foot-credit">
+        <b>Project</b><br>HGD134 · Innovative and Creative Students<br>
+        <b>Innovator</b> Aisha Farhana Zukrina Binti Azzady<br>
+        Student ID 2025698494 · KP2A1<br>
+        UiTM Kampus Jengka, Pahang
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 MediSafe · Student innovation project</span>
+      <span>Built with care 💊</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var C = {teal:'#119B95',deep:'#0C2B2C',amber:'#E8A23D',ink:'#0F2A2C',muted:'#5E7373',
+    line:'#E1ECEA',green:'#2E9E6B',red:'#D9534F',soft:'#EAF4F2'};
+  var STATUS = {
+    taken:{label:'Taken',color:C.green,bg:'#E6F4EC'},
+    due:{label:'Due now',color:C.amber,bg:'#FBF1E1'},
+    upcoming:{label:'Upcoming',color:C.muted,bg:'#EEF3F2'},
+    missed:{label:'Missed',color:C.red,bg:'#FBE9E8'}
+  };
+  var doses = [
+    {id:'d1',name:'Metformin',dose:'500 mg',time:'08:00',slot:'Morning',status:'taken'},
+    {id:'d2',name:'Amlodipine',dose:'5 mg',time:'08:00',slot:'Morning',status:'taken'},
+    {id:'d3',name:'Vitamin D',dose:'1 tablet',time:'13:00',slot:'Afternoon',status:'due'},
+    {id:'d4',name:'Atorvastatin',dose:'20 mg',time:'21:00',slot:'Night',status:'upcoming'}
+  ];
+  var WEEK=[100,100,80,100,67,100,92], WDAYS=['M','T','W','T','F','S','S'];
+  var HISTORY=[
+    {name:'Amlodipine',dose:'5 mg',when:'Today · 08:02',status:'taken'},
+    {name:'Metformin',dose:'500 mg',when:'Today · 08:02',status:'taken'},
+    {name:'Atorvastatin',dose:'20 mg',when:'Yesterday · 21:05',status:'taken'},
+    {name:'Vitamin D',dose:'1 tablet',when:'Yesterday · 13:00',status:'missed'}
+  ];
+  var CARE=[
+    {text:'Metformin taken',when:'Today · 08:02',status:'taken'},
+    {text:'Amlodipine taken',when:'Today · 08:02',status:'taken'},
+    {text:'Vitamin D missed',when:'Yesterday',status:'missed'}
+  ];
+  var tab='today', overlay=null, scanPhase='scanning', reminderId=null, scanTimer=null;
+  var settings={reminders:true,sound:true,sharing:true,lang:'English'};
+  var root=document.getElementById('app');
+
+  function badge(s){var t=STATUS[s];return '<span class="badge" style="color:'+t.color+';background:'+t.bg+'">'+t.label+'</span>';}
+  function ic(p,c,w){return '<svg class="i" width="'+(w||18)+'" height="'+(w||18)+'" viewBox="0 0 24 24" style="color:'+(c||'currentColor')+'">'+p+'</svg>';}
+  var pillPath='<rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(45 12 12)"/>';
+  var checkPath='<path d="M5 13l4 4L19 7"/>';
+  var bellPath='<path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/>';
+
+  function todayScreen(){
+    var taken=doses.filter(function(d){return d.status==='taken'}).length, total=doses.length;
+    var pct=Math.round(taken/total*100);
+    var next=doses.filter(function(d){return d.status==='due'})[0]||doses.filter(function(d){return d.status==='upcoming'})[0];
+    var h='<h2 class="scr-title">Today</h2><div class="sub">Tuesday, 24 June</div>';
+    h+='<div class="a-card" style="padding:15px;display:flex;align-items:center;gap:14px">'
+      +'<div class="ring" style="background:conic-gradient('+C.teal+' '+pct+'%, '+C.soft+' '+pct+'%)"><i>'+pct+'%</i></div>'
+      +'<div><div style="font-weight:800;font-size:15px;color:'+C.ink+'">'+taken+' of '+total+' taken</div>'
+      +'<div style="font-size:12px;color:'+C.muted+';margin-top:2px">You are on track today.</div></div></div>';
+    if(next){
+      h+='<div class="next-card"><div class="e">Next dose · '+next.time+'</div>'
+        +'<div class="nm">'+next.name+'</div>'
+        +'<div style="font-size:13px;color:#CFE0DE;margin-top:2px">'+next.dose+' · '+next.slot+'</div>'
+        +'<button class="take-btn" data-take="'+next.id+'">Take now</button></div>';
+    }
+    h+='<div style="font-size:12px;font-weight:700;color:'+C.muted+';padding:14px 2px 0">Today\'s schedule</div>';
+    h+='<div class="a-card" style="padding:4px">';
+    doses.forEach(function(d){
+      h+='<div class="dose-row"><div style="width:40px;text-align:center"><div style="font-weight:700;color:'+C.ink+'">'+d.time+'</div>'
+        +'<div style="font-size:10px;color:'+C.muted+'">'+d.slot+'</div></div>'
+        +'<div class="pill-ic">'+ic(pillPath,C.teal,18)+'</div>'
+        +'<div style="flex:1;min-width:0"><div style="font-weight:600;color:'+C.ink+'">'+d.name+'</div>'
+        +'<div style="font-size:12px;color:'+C.muted+'">'+d.dose+'</div></div>'+badge(d.status)+'</div>';
+    });
+    h+='</div>';
+    return h;
+  }
+  function historyScreen(){
+    var h='<h2 class="scr-title">History</h2><div class="sub">Adherence</div>';
+    h+='<div class="a-card" style="padding:16px"><div style="display:flex;align-items:flex-end;gap:8px">'
+      +'<div style="font-family:var(--display);font-weight:800;font-size:38px;color:'+C.teal+';line-height:1">92%</div>'
+      +'<div style="font-size:12px;color:'+C.muted+';padding-bottom:5px">this week</div></div><div class="week">';
+    WEEK.forEach(function(p,i){
+      var col=p>=100?C.green:(p>=80?C.teal:C.amber);
+      h+='<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1">'
+        +'<div class="wbar"><i style="height:'+p+'%;background:'+col+'"></i></div>'
+        +'<span style="font-size:10px;color:'+C.muted+';font-weight:600">'+WDAYS[i]+'</span></div>';
+    });
+    h+='</div></div><div style="font-size:12px;font-weight:700;color:'+C.muted+';padding:14px 2px 0">Recent doses</div><div class="a-card" style="padding:4px">';
+    HISTORY.forEach(function(x){
+      h+='<div class="dose-row"><div style="width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:'+STATUS[x.status].bg+'">'
+        +ic(x.status==='missed'?bellPath:checkPath,STATUS[x.status].color,15)+'</div>'
+        +'<div style="flex:1;min-width:0"><div style="font-weight:600;color:'+C.ink+'">'+x.name+' <span style="color:'+C.muted+';font-weight:500">· '+x.dose+'</span></div>'
+        +'<div style="font-size:11px;color:'+C.muted+'">'+x.when+'</div></div>'+badge(x.status)+'</div>';
+    });
+    h+='</div>';
+    return h;
+  }
+  function familyScreen(){
+    var h='<h2 class="scr-title">Family</h2><div class="sub">Caregiver view</div>';
+    h+='<div class="a-card" style="padding:15px;display:flex;align-items:center;gap:12px">'
+      +'<div style="width:44px;height:44px;border-radius:50%;background:'+C.soft+';display:flex;align-items:center;justify-content:center">'
+      +ic('<circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/>',C.teal,22)+'</div>'
+      +'<div style="flex:1"><div style="font-weight:800;color:'+C.ink+'">Mak (Mother)</div>'
+      +'<div style="font-size:12px;color:'+C.muted+'">4 medications · Box online</div></div>'
+      +'<span class="badge" style="color:'+C.green+';background:#E6F4EC">On track</span></div>';
+    h+='<div style="display:flex;gap:10px;align-items:center;padding:13px 14px;background:#FBE9E8;border:1px solid #F2C9C6;border-radius:14px;margin-top:13px">'
+      +ic(bellPath,C.red,20)+'<div><div style="font-weight:700;color:'+C.red+';font-size:13px">1 missed dose yesterday</div>'
+      +'<div style="font-size:12px;color:#9B5450">Vitamin D · 13:00</div></div></div>';
+    h+='<div style="font-size:12px;font-weight:700;color:'+C.muted+';padding:14px 2px 0">Recent activity</div><div class="a-card" style="padding:4px">';
+    CARE.forEach(function(e){
+      h+='<div class="dose-row"><div style="width:9px;height:9px;border-radius:50%;background:'+STATUS[e.status].color+'"></div>'
+        +'<div style="flex:1;color:'+C.ink+'">'+e.text+'</div>'
+        +'<div style="font-size:11px;color:'+C.muted+'">'+e.when+'</div></div>';
+    });
+    h+='</div><div style="display:flex;gap:10px;margin-top:14px">'
+      +'<button class="take-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px">'+ic('<path d="M5 4h3l2 5-2 1.5a11 11 0 005 5L19 13l5 2v3a2 2 0 01-2 2A16 16 0 015 6a2 2 0 010-2z"/>','#fff',16)+'Call</button>'
+      +'<button class="take-btn" style="flex:1;background:#fff;color:'+C.ink+';border:1px solid '+C.line+';display:flex;align-items:center;justify-content:center;gap:6px">'+ic('<path d="M5 5h14a2 2 0 012 2v8a2 2 0 01-2 2H9l-4 3V7a2 2 0 012-2z"/>',C.ink,16)+'Message</button></div>';
+    return h;
+  }
+  function scanScreen(){
+    var d=doses.filter(function(x){return x.id===reminderId})[0];
+    if(!d) return '';
+    var h='<div class="scan"><div style="text-align:center">'
+      +'<div style="display:inline-flex;align-items:center;gap:6px;color:'+C.amber+';font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase">'
+      +ic(bellPath,C.amber,15)+' Reminder · '+d.time+'</div>'
+      +'<div style="font-family:var(--display);font-size:21px;font-weight:800;margin-top:8px">Time for your '+d.slot.toLowerCase()+' dose</div>'
+      +'<div style="font-size:13px;color:#CFE0DE;margin-top:2px">'+d.name+' · '+d.dose+'</div></div>';
+    h+='<div class="viewfinder"><div class="vpill"></div>';
+    if(scanPhase==='scanning'){h+='<div class="scanline"></div>';}
+    else{h+='<div class="verific"><div class="vcheck">'+ic(checkPath,'#fff',32)+'</div></div>';}
+    h+='</div>';
+    h+='<div style="text-align:center;font-size:13px;margin:6px 0;'+(scanPhase==='scanning'?'color:#9DD3BC':'color:#9DD3BC;font-weight:700')+'">'
+      +(scanPhase==='scanning'?'Verifying pill with AI…':'Correct pill detected ✓')+'</div>';
+    h+='<div style="width:100%;display:flex;flex-direction:column;gap:9px">'
+      +'<button class="take-btn" data-confirm="1" style="background:'+(scanPhase==='verified'?C.teal:'#1E4244')+';color:'+(scanPhase==='verified'?'#fff':'#6E8E8C')+'" '+(scanPhase==='verified'?'':'disabled')+'>Confirm dose</button>'
+      +'<button class="take-btn" data-close="1" style="background:transparent;color:#9DB6B4">Snooze 10 minutes</button></div></div>';
+    return h;
+  }
+  function tabbar(){
+    function t(id,p,label,active){return '<button class="tab '+(active?'active':'')+'" data-tab="'+id+'">'+ic(p,active?C.teal:'#9AAFAE',22)+'<span>'+label+'</span></button>';}
+    var s=overlay==='settings';
+    return '<div class="tabbar">'
+      +t('today','<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5"/><path d="M9 2h6"/>','Today',tab==='today'&&!s)
+      +t('history','<path d="M5 20V10M12 20V4M19 20v-7"/>','History',tab==='history'&&!s)
+      +'<div class="tab-add"><button class="fab" data-tab="add">'+ic('<path d="M12 5v14M5 12h14"/>','#fff',24)+'</button></div>'
+      +t('family','<circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/>','Family',tab==='family'&&!s)
+      +t('settings','<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 00-1.7-1l-.3-2.5h-4l-.3 2.5a7 7 0 00-1.7 1l-2.3-1-2 3.4 2 1.5a7 7 0 000 2l-2 1.5 2 3.4 2.3-1a7 7 0 001.7 1l.3 2.5h4l.3-2.5a7 7 0 001.7-1l2.3 1 2-3.4-2-1.5a7 7 0 00.1-1z"/>','Settings',s)
+      +'</div>';
+  }
+  function addSheet(){
+    return '<div style="position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:flex-end">'
+      +'<div data-close="1" style="position:absolute;inset:0;background:rgba(12,43,44,.4)"></div>'
+      +'<div style="position:relative;background:'+C.soft+';border-radius:24px 24px 34px 34px;padding:16px 16px 20px;max-height:88%;overflow-y:auto">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+      +'<h2 style="font-family:var(--display);font-size:20px;color:'+C.ink+'">Add medication</h2>'
+      +'<button data-close="1" style="border:none;background:'+C.line+';width:28px;height:28px;border-radius:50%;color:'+C.muted+';font-weight:700;cursor:pointer">✕</button></div>'
+      +'<div style="font-size:12px;font-weight:600;color:'+C.muted+'">Medicine name</div>'
+      +'<input placeholder="e.g. Metformin" style="width:100%;border:1px solid '+C.line+';border-radius:12px;padding:11px 13px;font-size:14px;margin:6px 0 12px;font-family:var(--body)">'
+      +'<div style="font-size:12px;font-weight:600;color:'+C.muted+'">Dosage</div>'
+      +'<input placeholder="e.g. 500 mg" style="width:100%;border:1px solid '+C.line+';border-radius:12px;padding:11px 13px;font-size:14px;margin:6px 0 12px;font-family:var(--body)">'
+      +'<div style="font-size:12px;font-weight:600;color:'+C.muted+';margin-bottom:6px">Compartment</div>'
+      +'<div style="display:flex;gap:5px;margin-bottom:14px">'+[1,2,3,4,5,6,7].map(function(n){return '<div style="flex:1;text-align:center;border:1px solid '+(n===2?C.teal:C.line)+';background:'+(n===2?C.teal:'#fff')+';color:'+(n===2?'#fff':C.muted)+';border-radius:9px;padding:9px 0;font-weight:700;font-family:var(--display);font-size:13px">'+n+'</div>'}).join('')+'</div>'
+      +'<button class="take-btn" data-close="1">Save medication</button></div></div>';
+  }
+
+  function toggle(on){
+    return '<span style="width:42px;height:24px;border-radius:999px;background:'+(on?C.teal:'#CBD8D6')+';position:relative;flex-shrink:0;transition:.2s;display:inline-block">'
+      +'<span style="position:absolute;top:2px;left:'+(on?'20px':'2px')+';width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s"></span></span>';
+  }
+  function row(left,right,attr){
+    return '<div class="dose-row" '+(attr||'')+' style="cursor:'+(attr?'pointer':'default')+'">'
+      +'<div style="flex:1">'+left+'</div>'+right+'</div>';
+  }
+  function settingsSheet(){
+    var h='<div class="scan" style="background:'+C.bg+';color:'+C.ink+';padding:0;overflow-y:auto;align-items:stretch;display:block">';
+    // header
+    h+='<div style="display:flex;align-items:center;gap:10px;padding:48px 18px 8px">'
+      +'<button data-close="1" style="border:none;background:#fff;border:1px solid '+C.line+';width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">'
+      +ic('<path d="M15 6l-6 6 6 6"/>',C.ink,18)+'</button>'
+      +'<h2 style="font-family:var(--display);font-size:25px;color:'+C.ink+'">Settings</h2></div>';
+    h+='<div style="padding:6px 16px 30px">';
+    // profile
+    h+='<div class="a-card" style="padding:14px;display:flex;align-items:center;gap:12px">'
+      +'<div style="width:46px;height:46px;border-radius:50%;background:'+C.soft+';display:flex;align-items:center;justify-content:center">'
+      +ic('<circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/>',C.teal,24)+'</div>'
+      +'<div style="flex:1"><div style="font-weight:800;color:'+C.ink+'">Mak (Mother)</div>'
+      +'<div style="font-size:12px;color:'+C.muted+'">Patient profile · 4 medications</div></div>'
+      +ic('<path d="M9 6l6 6-6 6"/>',C.muted,18)+'</div>';
+    // reminders group
+    h+='<div style="font-size:12px;font-weight:700;color:'+C.muted+';padding:16px 2px 0">Reminders</div>';
+    h+='<div class="a-card" style="padding:4px">'
+      +row('<div style="font-weight:600;color:'+C.ink+'">Dose reminders</div><div style="font-size:12px;color:'+C.muted+'">Alerts when a dose is due</div>',toggle(settings.reminders),'data-set="reminders"')
+      +row('<div style="font-weight:600;color:'+C.ink+'">Sound & vibration</div>',toggle(settings.sound),'data-set="sound"')
+      +'</div>';
+    // caregiver
+    h+='<div style="font-size:12px;font-weight:700;color:'+C.muted+';padding:16px 2px 0">Family & sharing</div>';
+    h+='<div class="a-card" style="padding:4px">'
+      +row('<div style="font-weight:600;color:'+C.ink+'">Share with caregivers</div><div style="font-size:12px;color:'+C.muted+'">2 family members</div>',toggle(settings.sharing),'data-set="sharing"')
+      +'</div>';
+    // device
+    h+='<div style="font-size:12px;font-weight:700;color:'+C.muted+';padding:16px 2px 0">MediBox device</div>';
+    h+='<div class="a-card" style="padding:4px">'
+      +row('<div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:'+C.green+'"></span><div><div style="font-weight:600;color:'+C.ink+'">Connected</div><div style="font-size:12px;color:'+C.muted+'">Wi-Fi · 7 compartments</div></div></div>','<span class="badge" style="color:'+C.green+';background:#E6F4EC">Online</span>')
+      +'</div>';
+    // language + about
+    h+='<div style="font-size:12px;font-weight:700;color:'+C.muted+';padding:16px 2px 0">General</div>';
+    h+='<div class="a-card" style="padding:4px">'
+      +row('<div style="font-weight:600;color:'+C.ink+'">Language</div>','<div style="display:flex;align-items:center;gap:6px;color:'+C.muted+'"><span style="font-size:13px">'+settings.lang+'</span>'+ic('<path d="M9 6l6 6-6 6"/>',C.muted,16)+'</div>','data-set="lang"')
+      +row('<div style="font-weight:600;color:'+C.ink+'">About MediSafe</div>','<div style="font-size:12px;color:'+C.muted+'">HGD134 · v1.0</div>')
+      +'</div>';
+    h+='</div></div>';
+    return h;
+  }
+  function render(){
+    var body='';
+    if(tab==='today') body=todayScreen();
+    else if(tab==='history') body=historyScreen();
+    else if(tab==='family') body=familyScreen();
+    var html='<div class="app-top"></div><div class="app-body">'+body+'</div>'+tabbar();
+    if(overlay==='add') html+=addSheet();
+    if(overlay==='scan') html+=scanScreen();
+    if(overlay==='settings') html+=settingsSheet();
+    root.innerHTML=html;
+    bind();
+  }
+  function bind(){
+    root.querySelectorAll('[data-tab]').forEach(function(b){
+      b.onclick=function(){var t=b.getAttribute('data-tab');
+        if(t==='add'){overlay='add';}
+        else if(t==='settings'){overlay='settings';}
+        else{tab=t;overlay=null;}render();};
+    });
+    root.querySelectorAll('[data-take]').forEach(function(b){
+      b.onclick=function(){
+        reminderId=b.getAttribute('data-take');overlay='scan';scanPhase='scanning';render();
+        clearTimeout(scanTimer);
+        scanTimer=setTimeout(function(){scanPhase='verified';render();},2200);
+      };
+    });
+    root.querySelectorAll('[data-confirm]').forEach(function(b){
+      b.onclick=function(){
+        doses=doses.map(function(d){return d.id===reminderId?Object.assign({},d,{status:'taken'}):d;});
+        overlay=null;render();
+      };
+    });
+    root.querySelectorAll('[data-close]').forEach(function(b){
+      b.onclick=function(){overlay=null;clearTimeout(scanTimer);render();};
+    });
+    root.querySelectorAll('[data-settings]').forEach(function(b){
+      b.onclick=function(){overlay='settings';render();};
+    });
+    root.querySelectorAll('[data-set]').forEach(function(b){
+      b.onclick=function(){
+        var k=b.getAttribute('data-set');
+        if(k==='lang'){settings.lang=settings.lang==='English'?'Bahasa Melayu':'English';}
+        else{settings[k]=!settings[k];}
+        render();
+      };
+    });
+  }
+  render();
+})();
+
+/* ---- make the floating cards draggable so they don't block the demo ---- */
+(function(){
+  function makeDraggable(el){
+    if(!el) return;
+    var startX,startY,baseLeft,baseTop,dragging=false;
+    function pointFrom(e){return e.touches?e.touches[0]:e;}
+    function down(e){
+      var p=pointFrom(e);
+      var stage=el.parentElement.getBoundingClientRect();
+      var box=el.getBoundingClientRect();
+      // switch to absolute left/top positioning relative to the phone stage
+      baseLeft=box.left-stage.left;
+      baseTop=box.top-stage.top;
+      el.style.left=baseLeft+'px';
+      el.style.top=baseTop+'px';
+      el.style.right='auto';
+      el.style.bottom='auto';
+      startX=p.clientX; startY=p.clientY; dragging=true;
+      el.classList.add('dragging');
+      document.addEventListener('mousemove',move);
+      document.addEventListener('mouseup',up);
+      document.addEventListener('touchmove',move,{passive:false});
+      document.addEventListener('touchend',up);
+      e.preventDefault();
+    }
+    function move(e){
+      if(!dragging) return;
+      var p=pointFrom(e);
+      el.style.left=(baseLeft+(p.clientX-startX))+'px';
+      el.style.top=(baseTop+(p.clientY-startY))+'px';
+      if(e.cancelable) e.preventDefault();
+    }
+    function up(){
+      dragging=false;
+      el.classList.remove('dragging');
+      document.removeEventListener('mousemove',move);
+      document.removeEventListener('mouseup',up);
+      document.removeEventListener('touchmove',move);
+      document.removeEventListener('touchend',up);
+    }
+    el.addEventListener('mousedown',down);
+    el.addEventListener('touchstart',down,{passive:false});
+  }
+  document.querySelectorAll('.float-card').forEach(makeDraggable);
+})();
+</script>
+</body>
+</html>
